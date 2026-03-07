@@ -1,5 +1,7 @@
-$('.swiper').each(function index() {
-    let swiper = new Swiper(this, {
+$('.slider-main-component').each(function index() {
+    const swiperEl = $(component).find(".swiper")[0];
+
+    let swiper = new Swiper(swiperEl, {
         slidesPerView: "auto",
         speed: 500,
         mousewheel: {
