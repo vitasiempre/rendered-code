@@ -1,7 +1,16 @@
 console.log("I am connected!");
 
-$(".slider-main-component").each(function() {
-    const swiper = new Swiper($(this).find(".swiper")[0], {
-
-    })
-})
+$('.swiper').each(function index() {
+    this.classList.add('added');
+    let swiper = new Swiper(this, {
+        slidesPerView: "auto",
+        speed: 500,
+        mousewheel: {
+            forceToAxis: true,
+        },
+        keyboard: true,
+        freeMode: true,
+        spaceBetween: 15,
+        
+    }
+    )});
