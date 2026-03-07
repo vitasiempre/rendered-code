@@ -1,6 +1,5 @@
-console.log("I am connected!");
-
-$('.swiper').each(function index() {
+document.addEventListener("DOMContentLoaded", function() {
+    $('.swiper').each(function index() {
     this.classList.add('added');
     let swiper = new Swiper(this, {
         slidesPerView: "auto",
@@ -18,3 +17,8 @@ $('.swiper').each(function index() {
         
     }
     )});
+})
+
+
+
+
