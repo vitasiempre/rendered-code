@@ -15,6 +15,11 @@ $('.swiper').each(function index() {
         
     })
 
+    const s = document.querySelector(".swiper").swiper;
+    console.log("container", s.width);
+    console.log("virtualSize", s.virtualSize);
+    console.log("isLocked", s.isLocked);
+
     function refreshSwiper() {
       swiper.updateSize();
       swiper.updateSlides();
