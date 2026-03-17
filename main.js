@@ -1,16 +1,102 @@
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// FILM FLIPPING ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
-document.addEventListener("DOMContentLoaded", () => {
-  document
-    .getElementById("getStartedButton")
-    .addEventListener("click", (e) => {
-      const wfIx = Webflow.require("ix3");
-      wfIx.emit("getStarted");
-      console.log("click");
+
+document.addEventListener("DOMContentLoaded", (e) => {
+
+  var FILM_SEL = ".film";
+  var FLIPPED_CLASS = "is-flipped";
+
+  function getFilm(node) {
+    if (!node) return null;
+    if (node.closest) return node.closest(FILM_SEL);
+
+    // fallback (very old browsers)
+    while (node && node !== document) {
+      if (node.matches && node.matches(FILM_SEL)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  function setA11y(film, flipped) {
+    var front = film.querySelector(".film-front");
+    var back = film.querySelector(".film-back");
+    
+
+    if (!film.hasAttribute("role") && film.tagName !== "BUTTON") {
+      film.setAttribute("role", "button");
+    }
+    if (!film.hasAttribute("tabindex") && film.tagName !== "BUTTON") {
+      film.setAttribute("tabindex", "0");
+    }
+
+    film.setAttribute("aria-pressed", String(flipped));
+
+    if (front) front.setAttribute("aria-hidden", String(flipped));
+    if (back) back.setAttribute("aria-hidden", String(!flipped));
+  }
+
+  function flip(film, force) {
+    var flipped =
+      typeof force === "boolean"
+        ? force
+        : !film.classList.contains(FLIPPED_CLASS);
+
+    film.classList.toggle(FLIPPED_CLASS, flipped);
+    setA11y(film, flipped);
+  }
+
+  function init(root) {
+    var films = (root || document).querySelectorAll(FILM_SEL);
+    for (var i = 0; i < films.length; i++) {
+      setA11y(films[i], films[i].classList.contains(FLIPPED_CLASS));
+    }
+  }
+
+  // Click to flip
+  document.addEventListener("click", function (e) {
+    var film = getFilm(e.target);
+    if (!film) return;
+
+    if (
+      e.target.closest &&
+      e.target.closest("a, button, input, textarea, select, label")
+    )
+      return;
+
+    flip(film);
+  });
+
+  // Keyboard support
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var film = getFilm(e.target);
+    if (!film) return;
+
+    e.preventDefault();
+    flip(film);
+  });
+
+  // Init on load
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      init();
     });
-});
+  } else {
+    init();
+  }
 
+})
 
-//////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// MARCH BUTTON /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
 (() => {
   function sync(btn){
@@ -70,3 +156,205 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 })();
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// CUSTOM RADIO INPUT ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  var otherRadio = document.querySelector('input[data-customradio="true"], input[data-customRadio="true"]');
+
+  if (!otherRadio) return;
+
+  var option = otherRadio.closest('.radio__option');
+
+  var text = option && option.querySelector('.radio__other__text-input');
+
+  if (!option || !text) return;
+
+  function sync(){
+    var on = otherRadio.checked;
+    text.disabled = !on;
+    text.required = on;
+    if (!on) text.value = "";
+  }
+
+  function selectOther() {
+    if (!otherRadio.checked) {
+      otherRadio.checked = true;
+      otherRadio.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  text.addEventListener('focus', selectOther);
+  text.addEventListener('pointerdown', selectOther);
+  text.addEventListener('input', selectOther);
+
+  option.addEventListener('change', sync);
+  sync();
+});
+
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// TEXTAREA RESIZE //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const areas = document.querySelectorAll("textarea");
+
+  areas.forEach((el) => {
+    function autoResize() {
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    }
+
+    el.addEventListener("input", autoResize);
+    autoResize();
+  });
+});
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// FORMS NAVIGATION /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const forms = document.querySelectorAll('[data-type="contact-form"]');
+  forms.forEach((form, index) => {
+
+    // ---------------------------------
+    // 1️⃣ Make input IDs unique
+    // ---------------------------------
+
+    const radios = form.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio => {
+      let radioUpdatedName = radio.getAttribute('value') + '-' + index;
+      radio.id = radioUpdatedName;
+    });
+    
+    const hiddenInputs = form.querySelectorAll('.hidden-input');
+    hiddenInputs.forEach(input => {
+      let inputUpdatedName = input.getAttribute('name') + '-' + index;
+      input.id = inputUpdatedName;
+      const submissionPageInput = document.querySelector('input[name="submission_page"]');
+      if (submissionPageInput) {
+        submissionPageInput.value = window.location.href;
+      } else { console.log("not found url input"); }
+    });
+    
+    const inputs = form.querySelectorAll('.text-input__field');
+    inputs.forEach(input => {
+      let inputUpdatedName = input.getAttribute('name') + '-' + index;
+      let wrapper = input.closest('.text-input');
+      const label = wrapper?.querySelector('.text-input__label');
+      if (label) {
+        label.setAttribute('for', inputUpdatedName);
+      }
+      input.id = inputUpdatedName;
+    });
+
+    // ---------------------------------
+    // 2️⃣ Disable required on hidden sections at init
+    // ---------------------------------
+
+    form.querySelectorAll('.form-section.hidden input, .form-section.hidden textarea, .form-section.hidden select').forEach(el => {
+      el.dataset.wasRequired = el.required;
+      el.required = false;
+    });
+
+    // ---------------------------------
+    // 3️⃣ Fork button logic
+    // ---------------------------------
+
+    const forkButton = form.querySelector('[data-action="next"]');
+    let currentSection = form.querySelector('.form-section.current');
+
+    function getSelectedCategory() {
+      const selected = form.querySelector('input[name="contact-type"]:checked');
+      if (!selected) return;
+
+      const stepId = selected.value.slice(-2);
+      const nextSection = form.querySelector('[data-step="' + stepId + '"]');
+      if (!nextSection) return;
+
+      showNextSection(nextSection);
+    }
+
+    function showNextSection(nextSection) {
+      if (!currentSection) return;
+
+      // Disable required on fields leaving view
+      currentSection.querySelectorAll('input, textarea, select').forEach(el => {
+        el.dataset.wasRequired = el.required;
+        el.required = false;
+      });
+
+      currentSection.classList.remove("current");
+      currentSection.classList.add("hidden");
+
+      // Restore required on fields coming into view
+      nextSection.querySelectorAll('input, textarea, select').forEach(el => {
+        el.required = el.dataset.wasRequired === 'true';
+      });
+
+      nextSection.classList.remove("hidden");
+      nextSection.classList.add("current");
+
+      currentSection = nextSection;
+
+      const el = document.querySelector('input[name="submission_page"]');
+      if (el) el.value = window.location.href;
+
+      if (window.marchBtnInit) {
+        requestAnimationFrame(() => {
+          window.marchBtnInit(form);
+        });
+      }
+    }
+
+    if (forkButton) {
+      forkButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        getSelectedCategory();
+      });
+    }
+
+  });
+
+});
+
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// LINK PRETTIER ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+
+document.addEventListener("DOMContentLoaded", () => {
+		document.querySelectorAll('.link').forEach(link => {
+    console.log("found a link");
+  const textEl = link.querySelector('.link-text-element');
+  const icon = link.querySelector('.link-icon-position');
+  if (!textEl || !icon) return;
+
+  const words = textEl.textContent.trim().split(' ');
+  const lastWord = words.pop();
+  
+  textEl.innerHTML = words.join(' ') + (words.length ? ' ' : '') +
+    `<span style="white-space:nowrap">${lastWord}&nbsp;</span>`;
+  
+  // Move icon inside the nowrap span
+  const nowrap = textEl.querySelector('span');
+  nowrap.appendChild(icon);
+});
+})
