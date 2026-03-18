@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     init();
   }
 
-})
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -377,4 +377,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const nowrap = textEl.querySelector('span');
   nowrap.appendChild(icon);
 });
-})
+});
