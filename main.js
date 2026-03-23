@@ -328,20 +328,20 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    form.addEventListener('submit', async function(e) {
-    e.preventDefault();
+  //   form.addEventListener('submit', async function(e) {
+  //   e.preventDefault();
     
-    const formData = new FormData(form);
+  //   const formData = new FormData(form);
     
-    await fetch('https://hook.us2.make.com/2cu6nslb052wr8os7pk9n8cilxuab2ip', {
-      method: 'POST',
-      body: formData
-    });
+  //   await fetch('https://hook.us2.make.com/2cu6nslb052wr8os7pk9n8cilxuab2ip', {
+  //     method: 'POST',
+  //     body: formData
+  //   });
     
-    // Show Webflow's success state manually
-    form.closest('.w-form').querySelector('.w-form-done').style.display = 'block';
-    form.style.display = 'none';
-  });
+  //   // Show Webflow's success state manually
+  //   form.closest('.w-form').querySelector('.w-form-done').style.display = 'block';
+  //   form.style.display = 'none';
+  // });
 
   });
 
