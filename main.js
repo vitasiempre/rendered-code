@@ -343,9 +343,6 @@ document.addEventListener("DOMContentLoaded", function () {
     form.style.display = 'none';
   });
 
-
-});
-
   });
 
 });
