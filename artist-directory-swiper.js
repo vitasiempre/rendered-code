@@ -13,7 +13,7 @@ $('.slider-main-component').each(function index() {
         speed: 500,
         mousewheel: { forceToAxis: true },
         keyboard: true,
-        freeMode: !isMobile,
+        freeMode: true,
         spaceBetween: 30,
         centeredSlides: isMobile,
         loop: isMobile,
