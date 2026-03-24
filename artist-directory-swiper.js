@@ -15,8 +15,9 @@ $('.slider-main-component').each(function index() {
         keyboard: true,
         freeMode: !isMobile,
         spaceBetween: 30,
-        centeredSlides: !isMobile,
-        loop: !isMobile,
+        centeredSlides: isMobile,
+        loop: isMobile,
+        loopAdditionalSlides: isMobile ? 3 : 0,
     });
     }
 
