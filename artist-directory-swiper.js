@@ -1,25 +1,27 @@
 $('.slider-main-component').each(function index() {
     const swiperEl = $(this).find(".swiper")[0];
 
-    let swiper = new Swiper(swiperEl, {
+    let swiper;
+
+    function initSwiper() {
+    if (swiper) swiper.destroy(true, true);
+    
+    const isMobile = window.innerWidth < 767;
+    
+    swiper = new Swiper(swiperEl, {
         slidesPerView: "auto",
         speed: 500,
-        mousewheel: {
-            forceToAxis: true,
-        },
+        mousewheel: { forceToAxis: true },
         keyboard: true,
-        freeMode: true,
+        freeMode: !isMobile,
         spaceBetween: 30,
-        centeredSlides: true,
-        centeredSlidesBounds: true,
-        breakpoints: {
-            767: {
-                centeredSlides: false,
-                centeredSlidesBounds: false,
-            }
-        }
-        
-    })
+        centeredSlides: !isMobile,
+        loop: !isMobile,
+    });
+    }
+
+    initSwiper();
+    window.addEventListener('resize', initSwiper);
 
     const s = document.querySelector(".swiper").swiper;
     console.log("container", s.width);
