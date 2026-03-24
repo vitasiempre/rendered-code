@@ -16,8 +16,9 @@ $('.slider-main-component').each(function index() {
         freeMode: true,
         spaceBetween: 30,
         centeredSlides: isMobile,
+        centeredSlidesBounds: isMobile,
         loop: isMobile,
-        loopAdditionalSlides: isMobile ? 3 : 0,
+        loopAdditionalSlides: 4,
     });
     }
 
