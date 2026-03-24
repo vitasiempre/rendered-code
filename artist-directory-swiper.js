@@ -10,9 +10,10 @@ $('.slider-main-component').each(function index() {
         keyboard: true,
         freeMode: true,
         spaceBetween: 30,
+        centeredSlides: true,
         breakpoints: {
             767: {
-                centeredSlides: true,
+                centeredSlides: false,
             }
         }
         
