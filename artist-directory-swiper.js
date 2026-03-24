@@ -13,7 +13,7 @@ $('.slider-main-component').each(function index() {
         breakpoints: {
             767: {
                 centeredSlides: true,
-                loop: true,
+                centeredSlidesBounds: true,
             }
         }
         
