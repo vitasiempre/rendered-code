@@ -18,7 +18,6 @@ $('.slider-main-component').each(function index() {
         centeredSlides: isMobile,
         centeredSlidesBounds: isMobile,
         loop: isMobile,
-        loopAdditionalSlides: 4,
     });
     }
 
