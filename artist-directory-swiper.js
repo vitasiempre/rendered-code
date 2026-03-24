@@ -11,9 +11,11 @@ $('.slider-main-component').each(function index() {
         freeMode: true,
         spaceBetween: 30,
         centeredSlides: true,
+        centeredSlidesBounds: true,
         breakpoints: {
             767: {
                 centeredSlides: false,
+                centeredSlidesBounds: false,
             }
         }
         
