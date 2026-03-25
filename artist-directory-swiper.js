@@ -9,7 +9,11 @@ $('.slider-main-component').each(function index() {
         },
         keyboard: true,
         freeMode: true,
-        spaceBetween: 30,
+        spaceBetween: 10,
+        breakpoints: {
+        481: {
+            spaceBetween: 30,
+        }}
     })
 
     const s = document.querySelector(".swiper").swiper;
