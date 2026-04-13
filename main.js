@@ -332,13 +332,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         const anyChecked = group.some((el) => el.checked);
         if (!anyChecked) {
-          group[0].required = true;
-          group[0].style.opacity = "1";
-          group[0].style.position = "relative";
+          group[0].style.cssText =
+            "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
           group[0].reportValidity();
-          group[0].style.opacity = "";
-          group[0].style.position = "";
-          group[0].required = false;
+          group[0].style.cssText = "";
           return false;
         }
       }
