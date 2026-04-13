@@ -333,7 +333,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const anyChecked = group.some((el) => el.checked);
         if (!anyChecked) {
           group[0].required = true;
+          group[0].style.opacity = "1";
+          group[0].style.position = "relative";
           group[0].reportValidity();
+          group[0].style.opacity = "";
+          group[0].style.position = "";
           group[0].required = false;
           return false;
         }
