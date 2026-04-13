@@ -4,9 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-
 document.addEventListener("DOMContentLoaded", (e) => {
-
   var FILM_SEL = ".film";
   var FLIPPED_CLASS = "is-flipped";
 
@@ -25,7 +23,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
   function setA11y(film, flipped) {
     var front = film.querySelector(".film-front");
     var back = film.querySelector(".film-back");
-    
 
     if (!film.hasAttribute("role") && film.tagName !== "BUTTON") {
       film.setAttribute("role", "button");
@@ -89,7 +86,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
   } else {
     init();
   }
-
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,60 +95,60 @@ document.addEventListener("DOMContentLoaded", (e) => {
 ///////////////////////////////////////////////////////////////////////////
 
 (() => {
-  function sync(btn){
-    const svg  = btn.querySelector('.march-btn__stroke');
-    const rect = btn.querySelector('.march-btn__rect');
-    if(!svg || !rect) return;
+  function sync(btn) {
+    const svg = btn.querySelector(".march-btn__stroke");
+    const rect = btn.querySelector(".march-btn__rect");
+    if (!svg || !rect) return;
 
     const cs = getComputedStyle(btn);
-    const w = parseFloat(cs.getPropertyValue('--w')) || 2;
+    const w = parseFloat(cs.getPropertyValue("--w")) || 2;
 
     const box = btn.getBoundingClientRect();
-    const width  = box.width;
+    const width = box.width;
     const height = box.height;
 
     if (width <= 0 || height <= 0) return;
 
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-    const receivedRadius = btn.getAttribute('data-radius');
+    const receivedRadius = btn.getAttribute("data-radius");
     let r;
 
-    if (receivedRadius !== "90px")  {
-		r = parseInt(receivedRadius);
+    if (receivedRadius !== "90px") {
+      r = parseInt(receivedRadius);
     } else {
-    	r = (height - w) / 2;
+      r = (height - w) / 2;
     }
 
-    rect.setAttribute('x', w / 2);
-    rect.setAttribute('y', w / 2);
-    rect.setAttribute('width',  Math.max(0, width  - w));
-    rect.setAttribute('height', Math.max(0, height - w));
-    rect.setAttribute('stroke-linejoin', 'round');
-    rect.setAttribute('rx', r);
-    rect.setAttribute('ry', r);
+    rect.setAttribute("x", w / 2);
+    rect.setAttribute("y", w / 2);
+    rect.setAttribute("width", Math.max(0, width - w));
+    rect.setAttribute("height", Math.max(0, height - w));
+    rect.setAttribute("stroke-linejoin", "round");
+    rect.setAttribute("rx", r);
+    rect.setAttribute("ry", r);
 
-    btn.style.border = 'none';
+    btn.style.border = "none";
   }
 
-  function init(root){
-    (root || document).querySelectorAll('.march-btn').forEach(sync);
+  function init(root) {
+    (root || document).querySelectorAll(".march-btn").forEach(sync);
   }
 
   // ✅ call this after you show a hidden step
   window.marchBtnInit = init;
 
   // initial + resize
-  window.addEventListener('load', () => init());
-  window.addEventListener('resize', () => init());
+  window.addEventListener("load", () => init());
+  window.addEventListener("resize", () => init());
 
   // ✅ optional: auto-fix when hidden sections become visible / change size
-  if ('ResizeObserver' in window) {
+  if ("ResizeObserver" in window) {
     const ro = new ResizeObserver((entries) => {
       entries.forEach((entry) => sync(entry.target));
     });
-    window.addEventListener('load', () => {
-      document.querySelectorAll('.march-btn').forEach((btn) => ro.observe(btn));
+    window.addEventListener("load", () => {
+      document.querySelectorAll(".march-btn").forEach((btn) => ro.observe(btn));
     });
   }
 })();
@@ -163,20 +159,20 @@ document.addEventListener("DOMContentLoaded", (e) => {
 ////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-
-document.addEventListener('DOMContentLoaded', function () {
-
-  var otherRadio = document.querySelector('input[data-customradio="true"], input[data-customRadio="true"]');
+document.addEventListener("DOMContentLoaded", function () {
+  var otherRadio = document.querySelector(
+    'input[data-customradio="true"], input[data-customRadio="true"]',
+  );
 
   if (!otherRadio) return;
 
-  var option = otherRadio.closest('.radio__option');
+  var option = otherRadio.closest(".radio__option");
 
-  var text = option && option.querySelector('.radio__other__text-input');
+  var text = option && option.querySelector(".radio__other__text-input");
 
   if (!option || !text) return;
 
-  function sync(){
+  function sync() {
     var on = otherRadio.checked;
     text.disabled = !on;
     text.required = on;
@@ -186,25 +182,23 @@ document.addEventListener('DOMContentLoaded', function () {
   function selectOther() {
     if (!otherRadio.checked) {
       otherRadio.checked = true;
-      otherRadio.dispatchEvent(new Event('change', { bubbles: true }));
+      otherRadio.dispatchEvent(new Event("change", { bubbles: true }));
     }
   }
 
-  text.addEventListener('focus', selectOther);
-  text.addEventListener('pointerdown', selectOther);
-  text.addEventListener('input', selectOther);
+  text.addEventListener("focus", selectOther);
+  text.addEventListener("pointerdown", selectOther);
+  text.addEventListener("input", selectOther);
 
-  option.addEventListener('change', sync);
+  option.addEventListener("change", sync);
   sync();
 });
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 // TEXTAREA RESIZE //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-
 
 document.addEventListener("DOMContentLoaded", function () {
   const areas = document.querySelectorAll("textarea");
@@ -227,37 +221,39 @@ document.addEventListener("DOMContentLoaded", function () {
 ///////////////////////////////////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", function () {
-
-  const forms = document.querySelectorAll('[data-type="contact-form"]');
+  const forms = document.querySelectorAll(".form");
   forms.forEach((form, index) => {
-
     // ---------------------------------
     // 1️⃣ Make input IDs unique
     // ---------------------------------
 
     const radios = form.querySelectorAll('input[type="radio"]');
-    radios.forEach(radio => {
-      let radioUpdatedName = radio.getAttribute('value') + '-' + index;
+    radios.forEach((radio) => {
+      let radioUpdatedName = radio.getAttribute("value") + "-" + index;
       radio.id = radioUpdatedName;
     });
-    
-    const hiddenInputs = form.querySelectorAll('.hidden-input');
-    hiddenInputs.forEach(input => {
-      let inputUpdatedName = input.getAttribute('name') + '-' + index;
+
+    const hiddenInputs = form.querySelectorAll(".hidden-input");
+    hiddenInputs.forEach((input) => {
+      let inputUpdatedName = input.getAttribute("name") + "-" + index;
       input.id = inputUpdatedName;
-      const submissionPageInput = document.querySelector('input[name="submission_page"]');
+      const submissionPageInput = document.querySelector(
+        'input[name="submission_page"]',
+      );
       if (submissionPageInput) {
         submissionPageInput.value = window.location.href;
-      } else { console.log("not found url input"); }
+      } else {
+        console.log("not found url input");
+      }
     });
-    
-    const inputs = form.querySelectorAll('.text-input__field');
-    inputs.forEach(input => {
-      let inputUpdatedName = input.getAttribute('name') + '-' + index;
-      let wrapper = input.closest('.text-input');
-      const label = wrapper?.querySelector('.text-input__label');
+
+    const inputs = form.querySelectorAll(".text-input__field");
+    inputs.forEach((input) => {
+      let inputUpdatedName = input.getAttribute("name") + "-" + index;
+      let wrapper = input.closest(".text-input");
+      const label = wrapper?.querySelector(".text-input__label");
       if (label) {
-        label.setAttribute('for', inputUpdatedName);
+        label.setAttribute("for", inputUpdatedName);
       }
       input.id = inputUpdatedName;
     });
@@ -266,87 +262,90 @@ document.addEventListener("DOMContentLoaded", function () {
     // 2️⃣ Disable required on hidden sections at init
     // ---------------------------------
 
-    form.querySelectorAll('.form-section.hidden input, .form-section.hidden textarea, .form-section.hidden select').forEach(el => {
-      el.dataset.wasRequired = el.required;
-      el.required = false;
-    });
-
-    // ---------------------------------
-    // 3️⃣ Fork button logic
-    // ---------------------------------
-
-    const forkButton = form.querySelector('[data-action="next"]');
-    let currentSection = form.querySelector('.form-section.current');
-
-    function getSelectedCategory() {
-      const selected = form.querySelector('input[name="contact-type"]:checked');
-      if (!selected) return;
-
-      const stepId = selected.value.slice(-2);
-      const nextSection = form.querySelector('[data-step="' + stepId + '"]');
-      if (!nextSection) return;
-
-      showNextSection(nextSection);
-    }
-
-    function showNextSection(nextSection) {
-      if (!currentSection) return;
-
-      // Disable required on fields leaving view
-      currentSection.querySelectorAll('input, textarea, select').forEach(el => {
+    form
+      .querySelectorAll(
+        ".form-section.hidden input, .form-section.hidden textarea, .form-section.hidden select",
+      )
+      .forEach((el) => {
         el.dataset.wasRequired = el.required;
         el.required = false;
       });
 
-      currentSection.classList.remove("current");
-      currentSection.classList.add("hidden");
+    // ---------------------------------
+// 3️⃣ Navigation logic
+// ---------------------------------
 
-      // Restore required on fields coming into view
-      nextSection.querySelectorAll('input, textarea, select').forEach(el => {
-        el.required = el.dataset.wasRequired === 'true';
-      });
+let currentSection = form.querySelector(".form-section.current");
 
-      nextSection.classList.remove("hidden");
-      nextSection.classList.add("current");
+function getSelectedCategory() {
+  const selected = form.querySelector('input[name="contact-type"]:checked');
+  if (!selected) return;
 
-      currentSection = nextSection;
+  const stepId = selected.value.slice(-2);
+  const nextSection = form.querySelector('[data-step="' + stepId + '"]');
+  if (!nextSection) return;
 
-      const el = document.querySelector('input[name="submission_page"]');
-      if (el) el.value = window.location.href;
+  showNextSection(nextSection);
+}
 
-      if (window.marchBtnInit) {
-        requestAnimationFrame(() => {
-          window.marchBtnInit(form);
-        });
-      }
-    }
+function getNextSection() {
+  const allSteps = Array.from(form.querySelectorAll("[data-step]"));
+  const currentIndex = allSteps.findIndex((el) => el === currentSection);
+  return allSteps[currentIndex + 1] || null;
+}
 
-    if (forkButton) {
-      forkButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        getSelectedCategory();
-      });
-    }
+function showNextSection(nextSection) {
+  if (!currentSection || !nextSection) return;
 
-  //   form.addEventListener('submit', async function(e) {
-  //   e.preventDefault();
-    
-  //   const formData = new FormData(form);
-    
-  //   await fetch('https://hook.us2.make.com/2cu6nslb052wr8os7pk9n8cilxuab2ip', {
-  //     method: 'POST',
-  //     body: formData
-  //   });
-    
-  //   // Show Webflow's success state manually
-  //   form.closest('.w-form').querySelector('.w-form-done').style.display = 'block';
-  //   form.style.display = 'none';
-  // });
-
+  // Disable required on fields leaving view
+  currentSection.querySelectorAll("input, textarea, select").forEach((el) => {
+    el.dataset.wasRequired = el.required;
+    el.required = false;
   });
 
-});
+  currentSection.classList.remove("current");
+  currentSection.classList.add("hidden");
 
+  // Restore required on fields coming into view
+  nextSection.querySelectorAll("input, textarea, select").forEach((el) => {
+    el.required = el.dataset.wasRequired === "true";
+  });
+
+  nextSection.classList.remove("hidden");
+  nextSection.classList.add("current");
+
+  currentSection = nextSection;
+
+  const submissionPage = form.querySelector('input[name="submission_page"]');
+  if (submissionPage) submissionPage.value = window.location.href;
+
+  if (window.marchBtnInit) {
+    requestAnimationFrame(() => window.marchBtnInit(form));
+  }
+}
+
+// Single delegated listener handles all action buttons across all sections
+form.addEventListener("click", function (e) {
+  const actionButton = e.target.closest("[data-action]");
+  if (!actionButton) return;
+
+  const buttonType = actionButton.getAttribute("data-action");
+
+  switch (buttonType) {
+    case "next":
+      e.preventDefault();
+      showNextSection(getNextSection());
+      break;
+
+    case "fork":
+      e.preventDefault();
+      getSelectedCategory();
+      break;
+
+    default:
+      break;
+  }
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -354,22 +353,23 @@ document.addEventListener("DOMContentLoaded", function () {
 ////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-
 document.addEventListener("DOMContentLoaded", () => {
-		document.querySelectorAll('.link').forEach(link => {
+  document.querySelectorAll(".link").forEach((link) => {
     console.log("found a link");
-  const textEl = link.querySelector('.link-text-element');
-  const icon = link.querySelector('.link-icon-position');
-  if (!textEl || !icon) return;
+    const textEl = link.querySelector(".link-text-element");
+    const icon = link.querySelector(".link-icon-position");
+    if (!textEl || !icon) return;
 
-  const words = textEl.textContent.trim().split(' ');
-  const lastWord = words.pop();
-  
-  textEl.innerHTML = words.join(' ') + (words.length ? ' ' : '') +
-    `<span style="white-space:nowrap">${lastWord}&nbsp;</span>`;
-  
-  // Move icon inside the nowrap span
-  const nowrap = textEl.querySelector('span');
-  nowrap.appendChild(icon);
-});
+    const words = textEl.textContent.trim().split(" ");
+    const lastWord = words.pop();
+
+    textEl.innerHTML =
+      words.join(" ") +
+      (words.length ? " " : "") +
+      `<span style="white-space:nowrap">${lastWord}&nbsp;</span>`;
+
+    // Move icon inside the nowrap span
+    const nowrap = textEl.querySelector("span");
+    nowrap.appendChild(icon);
+  });
 });
