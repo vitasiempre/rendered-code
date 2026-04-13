@@ -272,79 +272,96 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
     // ---------------------------------
-// 3️⃣ Navigation logic
-// ---------------------------------
+    // 3️⃣ Navigation logic
+    // ---------------------------------
 
-let currentSection = form.querySelector(".form-section.current");
+    let currentSection = form.querySelector(".form-section.current");
 
-function getSelectedCategory() {
-  const selected = form.querySelector('input[name="contact-type"]:checked');
-  if (!selected) return;
+    function getSelectedCategory() {
+      const selected = form.querySelector('input[name="contact-type"]:checked');
+      if (!selected) return;
 
-  const stepId = selected.value.slice(-2);
-  const nextSection = form.querySelector('[data-step="' + stepId + '"]');
-  if (!nextSection) return;
+      const stepId = selected.value.slice(-2);
+      const nextSection = form.querySelector('[data-step="' + stepId + '"]');
+      if (!nextSection) return;
 
-  showNextSection(nextSection);
-}
+      showNextSection(nextSection);
+    }
 
-function getNextSection() {
-  const allSteps = Array.from(form.querySelectorAll("[data-step]"));
-  const currentIndex = allSteps.findIndex((el) => el === currentSection);
-  return allSteps[currentIndex + 1] || null;
-}
+    function getNextSection() {
+      const allSteps = Array.from(form.querySelectorAll("[data-step]"));
+      const currentIndex = allSteps.findIndex((el) => el === currentSection);
+      return allSteps[currentIndex + 1] || null;
+    }
 
-function showNextSection(nextSection) {
-  if (!currentSection || !nextSection) return;
+    function validateCurrentSection() {
+      const fields = currentSection.querySelectorAll("input, textarea, select");
+      let valid = true;
+      fields.forEach((el) => {
+        if (!el.reportValidity()) valid = false;
+      });
+      return valid;
+    }
 
-  // Disable required on fields leaving view
-  currentSection.querySelectorAll("input, textarea, select").forEach((el) => {
-    el.dataset.wasRequired = el.required;
-    el.required = false;
+    function showNextSection(nextSection) {
+      if (!currentSection || !nextSection) return;
+
+      // Disable required on fields leaving view
+      currentSection
+        .querySelectorAll("input, textarea, select")
+        .forEach((el) => {
+          el.dataset.wasRequired = el.required;
+          el.required = false;
+        });
+
+      currentSection.classList.remove("current");
+      currentSection.classList.add("hidden");
+
+      // Restore required on fields coming into view
+      nextSection.querySelectorAll("input, textarea, select").forEach((el) => {
+        el.required = el.dataset.wasRequired === "true";
+      });
+
+      nextSection.classList.remove("hidden");
+      nextSection.classList.add("current");
+
+      currentSection = nextSection;
+
+      const submissionPage = form.querySelector(
+        'input[name="submission_page"]',
+      );
+      if (submissionPage) submissionPage.value = window.location.href;
+
+      if (window.marchBtnInit) {
+        requestAnimationFrame(() => window.marchBtnInit(form));
+      }
+    }
+
+    // Single delegated listener handles all action buttons across all sections
+    form.addEventListener("click", function (e) {
+      const actionButton = e.target.closest("[data-action]");
+      if (!actionButton) return;
+
+      const buttonType = actionButton.getAttribute("data-action");
+
+      switch (buttonType) {
+        case "next":
+          e.preventDefault();
+          if (!validateCurrentSection()) return;
+          showNextSection(getNextSection());
+          break;
+
+        case "fork":
+          e.preventDefault();
+          if (!validateCurrentSection()) return;
+          getSelectedCategory();
+          break;
+
+        default:
+          break;
+      }
+    });
   });
-
-  currentSection.classList.remove("current");
-  currentSection.classList.add("hidden");
-
-  // Restore required on fields coming into view
-  nextSection.querySelectorAll("input, textarea, select").forEach((el) => {
-    el.required = el.dataset.wasRequired === "true";
-  });
-
-  nextSection.classList.remove("hidden");
-  nextSection.classList.add("current");
-
-  currentSection = nextSection;
-
-  const submissionPage = form.querySelector('input[name="submission_page"]');
-  if (submissionPage) submissionPage.value = window.location.href;
-
-  if (window.marchBtnInit) {
-    requestAnimationFrame(() => window.marchBtnInit(form));
-  }
-}
-
-// Single delegated listener handles all action buttons across all sections
-form.addEventListener("click", function (e) {
-  const actionButton = e.target.closest("[data-action]");
-  if (!actionButton) return;
-
-  const buttonType = actionButton.getAttribute("data-action");
-
-  switch (buttonType) {
-    case "next":
-      e.preventDefault();
-      showNextSection(getNextSection());
-      break;
-
-    case "fork":
-      e.preventDefault();
-      getSelectedCategory();
-      break;
-
-    default:
-      break;
-  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
