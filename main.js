@@ -334,7 +334,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!anyChecked) {
           group[0].style.cssText =
             "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+          group[0].setCustomValidity("Please select at least one option");
           group[0].reportValidity();
+          group[0].setCustomValidity("");
           group[0].style.cssText = "";
           return false;
         }
