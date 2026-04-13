@@ -298,12 +298,56 @@ document.addEventListener("DOMContentLoaded", function () {
       const fields = Array.from(
         currentSection.querySelectorAll("input, textarea, select"),
       );
+
+      // Check radio groups - find all unique radio group names and validate each
+      const radioNames = new Set(
+        Array.from(
+          currentSection.querySelectorAll('input[type="radio"][required]'),
+        ).map((el) => el.name),
+      );
+      for (const name of radioNames) {
+        const group = Array.from(
+          currentSection.querySelectorAll(`input[name="${name}"]`),
+        );
+        const anyChecked = group.some((el) => el.checked);
+        if (!anyChecked) {
+          group[0].required = true;
+          group[0].reportValidity();
+          group[0].required = false;
+          return false;
+        }
+      }
+
+      // Check checkbox groups - find all unique checkbox group names with required
+      const checkboxNames = new Set(
+        Array.from(
+          currentSection.querySelectorAll('input[type="checkbox"][required]'),
+        ).map((el) => el.name),
+      );
+      for (const name of checkboxNames) {
+        const group = Array.from(
+          currentSection.querySelectorAll(
+            `input[type="checkbox"][name="${name}"]`,
+          ),
+        );
+        const anyChecked = group.some((el) => el.checked);
+        if (!anyChecked) {
+          group[0].required = true;
+          group[0].reportValidity();
+          group[0].required = false;
+          return false;
+        }
+      }
+
+      // Check all other fields normally
       for (const el of fields) {
+        if (el.type === "radio" || el.type === "checkbox") continue;
         if (!el.checkValidity()) {
           el.reportValidity();
           return false;
         }
       }
+
       return true;
     }
 
