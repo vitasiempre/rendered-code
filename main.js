@@ -295,12 +295,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function validateCurrentSection() {
-      const fields = currentSection.querySelectorAll("input, textarea, select");
-      let valid = true;
-      fields.forEach((el) => {
-        if (!el.reportValidity()) valid = false;
-      });
-      return valid;
+      const fields = Array.from(
+        currentSection.querySelectorAll("input, textarea, select"),
+      );
+      for (const el of fields) {
+        if (!el.checkValidity()) {
+          el.reportValidity();
+          return false;
+        }
+      }
+      return true;
     }
 
     function showNextSection(nextSection) {
