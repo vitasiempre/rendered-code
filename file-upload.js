@@ -47,7 +47,6 @@ class FileInput {
     this.files.push(fileEntry);
 
     this.addRow(fileEntry);
-    this.updateMaxState();
 
     if (!this.accept.includes(file.type)) {
       this.setRowError(fileId, "Format not allowed");
@@ -113,6 +112,7 @@ class FileInput {
     if (!row) return;
     row.classList.remove("is-uploading", "is-success", "is-error");
     row.classList.add(`is-${state}`);
+    this.updateMaxState();
   }
 
   setRowError(fileId, message) {
@@ -125,6 +125,7 @@ class FileInput {
     row.classList.add("is-error");
     const errorTextEl = row.querySelector(".file-row__error-text");
     if (errorTextEl) errorTextEl.textContent = message;
+    this.updateMaxState();
   }
 
   removeRow(fileId) {
@@ -137,7 +138,7 @@ class FileInput {
   updateMaxState() {
     const validFiles = this.files.filter((f) => f.status !== "error");
     const atMax = validFiles.length >= this.maxFiles;
-    console.log("validFiles:", validFiles, "/", this.maxFiles);
+    console.log("validFiles:", validFiles, "/");
     this.root.classList.toggle("is-at-max", atMax);
   }
 
