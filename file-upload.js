@@ -29,7 +29,8 @@ class FileInput {
 
   async handleFilesSelected(filesArr) {
     for (const file of filesArr) {
-      if (this.files.length >= this.maxFiles) break;
+      const validFiles = this.files.filter((f) => f.status !== "error");
+      if (validFiles.length >= this.maxFiles) break;
       this.uploadFile(file);
     }
   }
