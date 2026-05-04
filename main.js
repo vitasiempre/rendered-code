@@ -258,6 +258,17 @@ document.addEventListener("DOMContentLoaded", function () {
       input.id = inputUpdatedName;
     });
 
+    const fileInputs = form.querySelectorAll(".file-input__input");
+    fileInputs.forEach((input) => {
+      let inputUpdatedName = input.getAttribute("name") + "-" + index;
+      let wrapper = input.closest(".file-upload-input");
+      const label = wrapper?.querySelector(".file-input__button");
+      if (label) {
+        label.setAttribute("for", inputUpdatedName);
+      }
+      input.id = inputUpdatedName;
+    });
+
     // ---------------------------------
     // 2️⃣ Disable required on hidden sections at init
     // ---------------------------------
@@ -388,7 +399,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Single delegated listener handles all action buttons across all sections
     form.addEventListener("click", function (e) {
       const actionButton = e.target.closest("[data-action]");
       if (!actionButton) return;
