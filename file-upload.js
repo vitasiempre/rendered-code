@@ -135,7 +135,8 @@ class FileInput {
   }
 
   updateMaxState() {
-    const atMax = this.files.length >= this.maxFiles;
+    const validFiles = this.files.filter((f) => f.status !== "error");
+    const atMax = validFiles.length >= this.maxFiles;
     this.root.classList.toggle("is-at-max", atMax);
   }
 
