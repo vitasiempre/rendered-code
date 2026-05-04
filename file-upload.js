@@ -30,6 +30,7 @@ class FileInput {
   async handleFilesSelected(filesArr) {
     for (const file of filesArr) {
       const validFiles = this.files.filter((f) => f.status !== "error");
+      console.log("Trying to handle,", validFiles.length >= this.maxFiles);
       if (validFiles.length >= this.maxFiles) break;
       this.uploadFile(file);
     }
