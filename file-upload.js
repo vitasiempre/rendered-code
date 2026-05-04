@@ -114,6 +114,12 @@ class FileInput {
     if (!row) return;
     row.classList.remove("is-uploading", "is-success", "is-error");
     row.classList.add(`is-${state}`);
+
+    if (state === "success" && this.maxFiles === 1) {
+      const errorFiles = this.files.filter((f) => f.status === "error");
+      errorFiles.forEach((f) => this.removeRow(f.id));
+    }
+
     this.updateMaxState();
   }
 
