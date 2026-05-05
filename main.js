@@ -361,6 +361,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
+      // Check file inputs
+      // Check file inputs (custom-managed via FileInput class)
+      const fileInputs = currentSection.querySelectorAll(".file-upload-input");
+      for (const root of fileInputs) {
+        const fi = window.fileInputs?.find((f) => f.root === root);
+        if (!fi) continue;
+
+        if (!fi.validate()) {
+          const nativeInput = fi.nativeInput;
+          let message = "Please add the required files";
+
+          if (fi.files.some((f) => f.status === "error")) {
+            message = "Please fix the file errors";
+          } else if (
+            fi.files.filter((f) => f.status === "success").length < fi.minFiles
+          ) {
+            message = `Please upload at least ${fi.minFiles} file${fi.minFiles > 1 ? "s" : ""}`;
+          }
+
+          nativeInput.style.cssText =
+            "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+          nativeInput.setCustomValidity(message);
+          nativeInput.reportValidity();
+          nativeInput.setCustomValidity("");
+          nativeInput.style.cssText = "";
+          return false;
+        }
+      }
+
       // Check all other fields normally
       for (const el of fields) {
         if (el.type === "radio" || el.type === "checkbox") continue;
