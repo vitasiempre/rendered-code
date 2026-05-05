@@ -324,87 +324,29 @@ document.addEventListener("DOMContentLoaded", function () {
         el.classList.remove("is-error");
       });
 
-      // Get all "validation units" in DOM order:
-      // - file input wrappers
-      // - radio groups (represented by their first input)
-      // - checkbox groups (represented by their first required input)
-      // - regular inputs/textareas/selects
+      // ... (build validationUnits array as before)
 
-      const seenRadioGroups = new Set();
-      const seenCheckboxGroups = new Set();
-      const validationUnits = [];
+      let firstInvalid = null;
 
-      const allFields = currentSection.querySelectorAll(
-        "input, textarea, select, .file-upload-input",
-      );
-
-      allFields.forEach((el) => {
-        if (el.classList.contains("file-upload-input")) {
-          validationUnits.push({ type: "file", root: el });
-          return;
-        }
-
-        if (el.type === "radio" && el.required) {
-          if (seenRadioGroups.has(el.name)) return;
-          seenRadioGroups.add(el.name);
-          validationUnits.push({ type: "radio", el, name: el.name });
-          return;
-        }
-
-        if (el.type === "checkbox" && el.required) {
-          if (seenCheckboxGroups.has(el.name)) return;
-          seenCheckboxGroups.add(el.name);
-          validationUnits.push({ type: "checkbox", el, name: el.name });
-          return;
-        }
-
-        if (el.type === "radio" || el.type === "checkbox") return;
-
-        validationUnits.push({ type: "field", el });
-      });
-
-      // Validate units in order
       for (const unit of validationUnits) {
         let valid = true;
         let errorTarget = null;
+
+        // ... (same logic as before, but DON'T call reportValidity yet — just detect)
 
         if (unit.type === "file") {
           const fi = window.fileInputs?.find((f) => f.root === unit.root);
           if (fi && !fi.validate()) {
             valid = false;
             errorTarget = unit.root;
-
-            let message = "Please add the required files";
-            if (fi.files.some((f) => f.status === "error")) {
-              message = "Please fix the file errors";
-            } else if (
-              fi.files.filter((f) => f.status === "success").length <
-              fi.minFiles
-            ) {
-              message = `Please upload at least ${fi.minFiles} file${
-                fi.minFiles > 1 ? "s" : ""
-              }`;
-            }
-
-            const nativeInput = fi.nativeInput;
-            nativeInput.style.cssText =
-              "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
-            nativeInput.setCustomValidity(message);
-            nativeInput.reportValidity();
-            nativeInput.setCustomValidity("");
-            nativeInput.style.cssText = "";
           }
         } else if (unit.type === "radio") {
           const group = Array.from(
             currentSection.querySelectorAll(`input[name="${unit.name}"]`),
           );
-          const anyChecked = group.some((el) => el.checked);
-          if (!anyChecked) {
+          if (!group.some((el) => el.checked)) {
             valid = false;
             errorTarget = group[0].closest(".radio__group") || group[0];
-            group[0].required = true;
-            group[0].reportValidity();
-            group[0].required = false;
           }
         } else if (unit.type === "checkbox") {
           const group = Array.from(
@@ -412,32 +354,77 @@ document.addEventListener("DOMContentLoaded", function () {
               `input[type="checkbox"][name="${unit.name}"]`,
             ),
           );
-          const anyChecked = group.some((el) => el.checked);
-          if (!anyChecked) {
+          if (!group.some((el) => el.checked)) {
             valid = false;
             errorTarget = group[0].closest(".checkbox-group") || group[0];
-            group[0].style.cssText =
-              "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
-            group[0].setCustomValidity("Please select at least one option");
-            group[0].reportValidity();
-            group[0].setCustomValidity("");
-            group[0].style.cssText = "";
           }
         } else if (unit.type === "field") {
           if (!unit.el.checkValidity()) {
             valid = false;
             errorTarget = unit.el.closest(".text-input, .textarea") || unit.el;
-            unit.el.reportValidity();
           }
         }
 
         if (!valid) {
           if (errorTarget) errorTarget.classList.add("is-error");
-          return false;
+          if (!firstInvalid) firstInvalid = unit;
         }
       }
 
+      // After marking all errors, show tooltip on the first one
+      if (firstInvalid) {
+        showTooltipForUnit(firstInvalid);
+        return false;
+      }
+
       return true;
+    }
+
+    function showTooltipForUnit(unit) {
+      if (unit.type === "file") {
+        const fi = window.fileInputs?.find((f) => f.root === unit.root);
+        if (!fi) return;
+
+        let message = "Please add the required files";
+        if (fi.files.some((f) => f.status === "error")) {
+          message = "Please fix the file errors";
+        } else if (
+          fi.files.filter((f) => f.status === "success").length < fi.minFiles
+        ) {
+          message = `Please upload at least ${fi.minFiles} file${
+            fi.minFiles > 1 ? "s" : ""
+          }`;
+        }
+
+        const nativeInput = fi.nativeInput;
+        nativeInput.style.cssText =
+          "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+        nativeInput.setCustomValidity(message);
+        nativeInput.reportValidity();
+        nativeInput.setCustomValidity("");
+        nativeInput.style.cssText = "";
+      } else if (unit.type === "radio") {
+        const group = Array.from(
+          currentSection.querySelectorAll(`input[name="${unit.name}"]`),
+        );
+        group[0].required = true;
+        group[0].reportValidity();
+        group[0].required = false;
+      } else if (unit.type === "checkbox") {
+        const group = Array.from(
+          currentSection.querySelectorAll(
+            `input[type="checkbox"][name="${unit.name}"]`,
+          ),
+        );
+        group[0].style.cssText =
+          "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+        group[0].setCustomValidity("Please select at least one option");
+        group[0].reportValidity();
+        group[0].setCustomValidity("");
+        group[0].style.cssText = "";
+      } else if (unit.type === "field") {
+        unit.el.reportValidity();
+      }
     }
 
     function showNextSection(nextSection) {
