@@ -231,6 +231,11 @@ document.addEventListener("DOMContentLoaded", function () {
       el.required = true;
     });
 
+    form.addEventListener("input", (e) => {
+      const errorWrapper = e.target.closest(".is-error");
+      if (errorWrapper) errorWrapper.classList.remove("is-error");
+    });
+
     // ---------------------------------
     // Make input IDs unique
     // ---------------------------------
@@ -314,87 +319,120 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function validateCurrentSection() {
-      const fields = Array.from(
-        currentSection.querySelectorAll("input, textarea, select"),
+      // Clear previous error states
+      currentSection.querySelectorAll(".is-error").forEach((el) => {
+        el.classList.remove("is-error");
+      });
+
+      // Get all "validation units" in DOM order:
+      // - file input wrappers
+      // - radio groups (represented by their first input)
+      // - checkbox groups (represented by their first required input)
+      // - regular inputs/textareas/selects
+
+      const seenRadioGroups = new Set();
+      const seenCheckboxGroups = new Set();
+      const validationUnits = [];
+
+      const allFields = currentSection.querySelectorAll(
+        "input, textarea, select, .file-upload-input",
       );
 
-      // Check radio groups - find all unique radio group names and validate each
-      const radioNames = new Set(
-        Array.from(
-          currentSection.querySelectorAll('input[type="radio"][required]'),
-        ).map((el) => el.name),
-      );
-      for (const name of radioNames) {
-        const group = Array.from(
-          currentSection.querySelectorAll(`input[name="${name}"]`),
-        );
-        const anyChecked = group.some((el) => el.checked);
-        if (!anyChecked) {
-          group[0].required = true;
-          group[0].reportValidity();
-          group[0].required = false;
-          return false;
+      allFields.forEach((el) => {
+        if (el.classList.contains("file-upload-input")) {
+          validationUnits.push({ type: "file", root: el });
+          return;
         }
-      }
 
-      // Check checkbox groups - find all unique checkbox group names with required
-      const checkboxNames = new Set(
-        Array.from(
-          currentSection.querySelectorAll('input[type="checkbox"][required]'),
-        ).map((el) => el.name),
-      );
-      for (const name of checkboxNames) {
-        const group = Array.from(
-          currentSection.querySelectorAll(
-            `input[type="checkbox"][name="${name}"]`,
-          ),
-        );
-        const anyChecked = group.some((el) => el.checked);
-        if (!anyChecked) {
-          group[0].style.cssText =
-            "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
-          group[0].setCustomValidity("Please select at least one option");
-          group[0].reportValidity();
-          group[0].setCustomValidity("");
-          group[0].style.cssText = "";
-          return false;
+        if (el.type === "radio" && el.required) {
+          if (seenRadioGroups.has(el.name)) return;
+          seenRadioGroups.add(el.name);
+          validationUnits.push({ type: "radio", el, name: el.name });
+          return;
         }
-      }
 
-      // Check file inputs
-      // Check file inputs (custom-managed via FileInput class)
-      const fileInputs = currentSection.querySelectorAll(".file-upload-input");
-      for (const root of fileInputs) {
-        const fi = window.fileInputs?.find((f) => f.root === root);
-        if (!fi) continue;
+        if (el.type === "checkbox" && el.required) {
+          if (seenCheckboxGroups.has(el.name)) return;
+          seenCheckboxGroups.add(el.name);
+          validationUnits.push({ type: "checkbox", el, name: el.name });
+          return;
+        }
 
-        if (!fi.validate()) {
-          const nativeInput = fi.nativeInput;
-          let message = "Please add the required files";
+        if (el.type === "radio" || el.type === "checkbox") return;
 
-          if (fi.files.some((f) => f.status === "error")) {
-            message = "Please fix the file errors";
-          } else if (
-            fi.files.filter((f) => f.status === "success").length < fi.minFiles
-          ) {
-            message = `Please upload at least ${fi.minFiles} file${fi.minFiles > 1 ? "s" : ""}`;
+        validationUnits.push({ type: "field", el });
+      });
+
+      // Validate units in order
+      for (const unit of validationUnits) {
+        let valid = true;
+        let errorTarget = null;
+
+        if (unit.type === "file") {
+          const fi = window.fileInputs?.find((f) => f.root === unit.root);
+          if (fi && !fi.validate()) {
+            valid = false;
+            errorTarget = unit.root;
+
+            let message = "Please add the required files";
+            if (fi.files.some((f) => f.status === "error")) {
+              message = "Please fix the file errors";
+            } else if (
+              fi.files.filter((f) => f.status === "success").length <
+              fi.minFiles
+            ) {
+              message = `Please upload at least ${fi.minFiles} file${
+                fi.minFiles > 1 ? "s" : ""
+              }`;
+            }
+
+            const nativeInput = fi.nativeInput;
+            nativeInput.style.cssText =
+              "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+            nativeInput.setCustomValidity(message);
+            nativeInput.reportValidity();
+            nativeInput.setCustomValidity("");
+            nativeInput.style.cssText = "";
           }
-
-          nativeInput.style.cssText =
-            "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
-          nativeInput.setCustomValidity(message);
-          nativeInput.reportValidity();
-          nativeInput.setCustomValidity("");
-          nativeInput.style.cssText = "";
-          return false;
+        } else if (unit.type === "radio") {
+          const group = Array.from(
+            currentSection.querySelectorAll(`input[name="${unit.name}"]`),
+          );
+          const anyChecked = group.some((el) => el.checked);
+          if (!anyChecked) {
+            valid = false;
+            errorTarget = group[0].closest(".radio__group") || group[0];
+            group[0].required = true;
+            group[0].reportValidity();
+            group[0].required = false;
+          }
+        } else if (unit.type === "checkbox") {
+          const group = Array.from(
+            currentSection.querySelectorAll(
+              `input[type="checkbox"][name="${unit.name}"]`,
+            ),
+          );
+          const anyChecked = group.some((el) => el.checked);
+          if (!anyChecked) {
+            valid = false;
+            errorTarget = group[0].closest(".checkbox-group") || group[0];
+            group[0].style.cssText =
+              "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+            group[0].setCustomValidity("Please select at least one option");
+            group[0].reportValidity();
+            group[0].setCustomValidity("");
+            group[0].style.cssText = "";
+          }
+        } else if (unit.type === "field") {
+          if (!unit.el.checkValidity()) {
+            valid = false;
+            errorTarget = unit.el.closest(".text-input, .textarea") || unit.el;
+            unit.el.reportValidity();
+          }
         }
-      }
 
-      // Check all other fields normally
-      for (const el of fields) {
-        if (el.type === "radio" || el.type === "checkbox") continue;
-        if (!el.checkValidity()) {
-          el.reportValidity();
+        if (!valid) {
+          if (errorTarget) errorTarget.classList.add("is-error");
           return false;
         }
       }
