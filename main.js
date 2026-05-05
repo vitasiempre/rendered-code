@@ -224,7 +224,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const forms = document.querySelectorAll(".form");
   forms.forEach((form, index) => {
     // ---------------------------------
-    // 1️⃣ Make input IDs unique
+    // Add required attributes
+    // ---------------------------------
+
+    form.querySelectorAll('[data-required="true"]').forEach((el) => {
+      el.required = true;
+    });
+
+    // ---------------------------------
+    // Make input IDs unique
     // ---------------------------------
 
     const radios = form.querySelectorAll('input[type="radio"]');
@@ -270,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // ---------------------------------
-    // 2️⃣ Disable required on hidden sections at init
+    // Disable required on hidden sections at init
     // ---------------------------------
 
     form
@@ -283,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
     // ---------------------------------
-    // 3️⃣ Navigation logic
+    // Navigation logic
     // ---------------------------------
 
     let currentSection = form.querySelector(".form-section.current");
