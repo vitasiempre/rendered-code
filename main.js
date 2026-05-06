@@ -432,7 +432,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (!valid) {
+          console.log("Adding is-error to:", errorTarget);
           if (errorTarget) errorTarget.classList.add("is-error");
+          console.log(
+            "classList after add:",
+            errorTarget?.classList.toString(),
+          );
+          setTimeout(() => {
+            console.log(
+              "classList after 200ms:",
+              errorTarget?.classList.toString(),
+            );
+          }, 200);
           return false;
         }
       }
