@@ -160,6 +160,28 @@ class FileInput {
     return true;
   }
 
+  showError() {
+    let message = "Please add the required files";
+
+    if (this.files.some((f) => f.status === "error")) {
+      message = "Please fix the file errors";
+    } else if (
+      this.files.filter((f) => f.status === "success").length < this.minFiles
+    ) {
+      message = `Please upload at least ${this.minFiles} file${
+        this.minFiles > 1 ? "s" : ""
+      }`;
+    }
+
+    const ni = this.nativeInput;
+    ni.style.cssText =
+      "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+    ni.setCustomValidity(message);
+    ni.reportValidity();
+    ni.setCustomValidity("");
+    ni.style.cssText = "";
+  }
+
   getPaths() {
     return this.files.filter((f) => f.status === "success").map((f) => f.path);
   }
