@@ -176,8 +176,15 @@ class FileInput {
     const ni = this.nativeInput;
     ni.setCustomValidity(message);
     ni.reportValidity();
-    ni.setCustomValidity("");
-    ni.style.cssText = "";
+
+    // Clear the custom message on next user interaction
+    const clearMessage = () => {
+      ni.setCustomValidity("");
+      ni.removeEventListener("input", clearMessage);
+      ni.removeEventListener("change", clearMessage);
+    };
+    ni.addEventListener("input", clearMessage);
+    ni.addEventListener("change", clearMessage);
   }
 
   getPaths() {
