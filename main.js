@@ -352,13 +352,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function validateFileInput(rootEl) {
+      console.log("validateFileInput called for:", rootEl);
       const fi = window.fileInputs?.find((f) => f.root === rootEl);
+      console.log("  fi:", fi, "validate:", fi?.validate());
       if (!fi || fi.validate()) return null;
       fi.showError();
       return rootEl;
     }
 
     function validateCurrentSection() {
+      console.log(
+        "validateCurrentSection called, currentSection:",
+        currentSection,
+      );
       currentSection.querySelectorAll(".is-error").forEach((el) => {
         el.classList.remove("is-error");
       });
