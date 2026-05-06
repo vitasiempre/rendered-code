@@ -174,8 +174,6 @@ class FileInput {
     }
 
     const ni = this.nativeInput;
-    ni.style.cssText =
-      "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
     ni.setCustomValidity(message);
     ni.reportValidity();
     ni.setCustomValidity("");
