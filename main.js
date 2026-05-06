@@ -437,6 +437,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
+    form.addEventListener("submit", (e) => {
+      if (!validateCurrentSection()) {
+        e.preventDefault();
+      }
+    });
+
     form.addEventListener("click", function (e) {
       const actionButton = e.target.closest("[data-action]");
       if (!actionButton) return;
