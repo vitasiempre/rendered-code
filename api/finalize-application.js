@@ -113,11 +113,29 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    const {
-      fullName,
-      artworkPaths, // array of { path, filename, mimeType }
-      cvPath, // { path, filename, mimeType }
-    } = req.body || {};
+    let { fullName, artworkPaths, cvPath } = req.body || {};
+
+    if (typeof artworkPaths === "string") {
+      try {
+        artworkPaths = JSON.parse(artworkPaths);
+      } catch {
+        artworkPaths = [];
+      }
+    }
+    if (typeof cvPath === "string") {
+      try {
+        cvPath = JSON.parse(cvPath);
+      } catch {
+        cvPath = null;
+      }
+    }
+
+    // Frontend sends cv as array, but endpoint expects single object
+    if (Array.isArray(cvPath) && cvPath.length > 0) {
+      cvPath = cvPath[0];
+    } else if (Array.isArray(cvPath)) {
+      cvPath = null;
+    }
 
     if (!fullName) {
       return res.status(400).json({ error: "Missing fullName" });
