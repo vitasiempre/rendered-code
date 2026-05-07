@@ -383,13 +383,22 @@ document.addEventListener("DOMContentLoaded", function () {
         section.querySelectorAll(`input[type="checkbox"][name="${name}"]`),
       );
       if (group.some((el) => el.checked)) return null;
-      group[0].style.cssText =
+
+      const target = group[0];
+      target.style.cssText =
         "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
-      group[0].setCustomValidity("Please select at least one option");
-      group[0].reportValidity();
-      group[0].setCustomValidity("");
-      group[0].style.cssText = "";
-      return group[0].closest(".checkbox__group") || group[0];
+      target.setCustomValidity("Please select at least one option");
+      target.reportValidity();
+
+      // Clear on next interaction so tooltip has time to render
+      const cleanup = () => {
+        target.setCustomValidity("");
+        target.style.cssText = "";
+        group.forEach((cb) => cb.removeEventListener("change", cleanup));
+      };
+      group.forEach((cb) => cb.addEventListener("change", cleanup));
+
+      return target.closest(".checkbox__group") || target;
     }
 
     function validateFileInput(rootEl) {
