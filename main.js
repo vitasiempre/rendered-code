@@ -348,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
       group[0].reportValidity();
       group[0].setCustomValidity("");
       group[0].style.cssText = "";
-      return group[0].closest(".checkbox-group") || group[0];
+      return group[0].closest(".checkbox__group") || group[0];
     }
 
     function validateFileInput(rootEl) {
