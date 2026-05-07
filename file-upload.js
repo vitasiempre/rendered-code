@@ -12,6 +12,7 @@ class FileInput {
     this.template = rootEl.querySelector(".file-row.is-template");
     this.nativeInput = rootEl.querySelector(".file-input__input");
     this.fieldWrapper = rootEl.querySelector(".file-input__field-wrapper");
+    this.pathsInput = rootEl.querySelector(".file-paths__input");
 
     this.files = [];
 
@@ -121,6 +122,7 @@ class FileInput {
     }
 
     this.updateMaxState();
+    this.updatePathsInput();
   }
 
   setRowError(fileId, message) {
@@ -134,6 +136,7 @@ class FileInput {
     const errorTextEl = row.querySelector(".file-row__error-text");
     if (errorTextEl) errorTextEl.textContent = message;
     this.updateMaxState();
+    this.updatePathsInput();
   }
 
   removeRow(fileId) {
@@ -152,6 +155,7 @@ class FileInput {
     row?.remove();
     this.files = this.files.filter((f) => f.id !== fileId);
     this.updateMaxState();
+    this.updatePathsInput();
   }
 
   updateMaxState() {
@@ -159,6 +163,14 @@ class FileInput {
     const atMax = validFiles.length >= this.maxFiles;
     console.log("validFiles:", validFiles, "/");
     this.root.classList.toggle("is-at-max", atMax);
+  }
+
+  updatePathsInput() {
+    if (!this.pathsInput) return;
+    const paths = this.files
+      .filter((f) => f.status === "success")
+      .map((f) => ({ path: f.path, filename: f.name, mimeType: f.type }));
+    this.pathsInput.value = paths.length ? JSON.stringify(paths) : "";
   }
 
   validate() {
