@@ -17,7 +17,7 @@ const FILE_LIMITS = {
 
 const ALLOWED_ORIGINS = [
   "https://rendered-e6eab4.webflow.io",
-  // add production domain when ready
+  "https://rendered.work",
 ];
 
 function setCorsHeaders(res, origin) {

@@ -137,6 +137,17 @@ class FileInput {
   }
 
   removeRow(fileId) {
+    const fileEntry = this.files.find((f) => f.id === fileId);
+
+    // If file was successfully uploaded, delete from R2
+    if (fileEntry?.path) {
+      fetch(`${VERCEL_API_BASE}/api/delete-temp-file`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: fileEntry.path }),
+      }).catch((err) => console.error("Failed to delete temp file:", err));
+    }
+
     const row = this.list.querySelector(`[data-file-id="${fileId}"]`);
     row?.remove();
     this.files = this.files.filter((f) => f.id !== fileId);
