@@ -248,6 +248,13 @@ document.addEventListener("DOMContentLoaded", function () {
       radio.id = radioUpdatedName;
     });
 
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.id) {
+        checkbox.id = checkbox.id + "-" + index;
+      }
+    });
+
     const hiddenInputs = form.querySelectorAll(".hidden-input");
     hiddenInputs.forEach((input) => {
       let inputUpdatedName = input.getAttribute("name") + "-" + index;
@@ -283,6 +290,40 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       input.id = inputUpdatedName;
     });
+
+    // ---------------------------------
+    // Sync checkbox groups to hidden inputs
+    // ---------------------------------
+
+    form
+      .querySelectorAll(".checkbox__group[data-group-name]")
+      .forEach((group) => {
+        const groupName = group.dataset.groupName;
+
+        // Create hidden input dynamically if not present
+        let hiddenInput = form.querySelector(
+          `input[type="hidden"][name="${groupName}"]`,
+        );
+        if (!hiddenInput) {
+          hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = groupName;
+          hiddenInput.value = "";
+          form.appendChild(hiddenInput);
+        }
+
+        const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+
+        function sync() {
+          const selected = Array.from(checkboxes)
+            .filter((cb) => cb.checked)
+            .map((cb) => cb.value);
+          hiddenInput.value = selected.join(",");
+        }
+
+        checkboxes.forEach((cb) => cb.addEventListener("change", sync));
+        sync(); // initial sync
+      });
 
     // ---------------------------------
     // Disable required on hidden sections at init
