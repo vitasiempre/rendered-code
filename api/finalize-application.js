@@ -175,7 +175,7 @@ export default async function handler(req, res) {
             artwork.filename,
             artwork.mimeType,
             artworksFolder.id,
-          ).then((link) => artworkLinks.push(link)),
+          ),
         );
       }
     }
@@ -189,9 +189,7 @@ export default async function handler(req, res) {
           cvPath.filename,
           cvPath.mimeType,
           cvFolder.id,
-        ).then((link) => {
-          cvLink = link;
-        }),
+        ),
       );
     }
 
@@ -211,8 +209,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       driveFolder: folder.webViewLink,
-      artworkLinks,
-      cvLink,
+      artworksFolder: artworksFolder.webViewLink,
+      cvFolder: cvFolder.webViewLink,
     });
   } catch (err) {
     console.error("finalize-application error:", err);
