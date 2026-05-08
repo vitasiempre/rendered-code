@@ -108,11 +108,10 @@ export default async function handler(req, res) {
   const origin = req.headers.origin || "";
   setCorsHeaders(res, origin);
 
+  if (req.method === "OPTIONS") return res.status(204).end();
   if (req.headers["x-secret"] !== process.env.FINALIZE_SECRET) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-
-  if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST")
     return res.status(405).json({ error: "Method not allowed" });
 
@@ -156,6 +155,11 @@ export default async function handler(req, res) {
       process.env.GOOGLE_DRIVE_FOLDER_ID,
     );
 
+    const [artworksFolder, cvFolder] = await Promise.all([
+      createDriveFolder(drive, "Artworks", folder.id),
+      createDriveFolder(drive, "CV", folder.id),
+    ]);
+
     // 2. Move files from R2 to Drive in parallel
     const uploadTasks = [];
     const artworkLinks = [];
@@ -170,7 +174,7 @@ export default async function handler(req, res) {
             artwork.path,
             artwork.filename,
             artwork.mimeType,
-            folder.id,
+            artworksFolder.id,
           ).then((link) => artworkLinks.push(link)),
         );
       }
@@ -184,7 +188,7 @@ export default async function handler(req, res) {
           cvPath.path,
           cvPath.filename,
           cvPath.mimeType,
-          folder.id,
+          cvFolder.id,
         ).then((link) => {
           cvLink = link;
         }),
