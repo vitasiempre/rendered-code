@@ -300,8 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .forEach((group) => {
         const groupName = group.dataset.groupName;
 
-        // Create hidden input dynamically if not present
-        let hiddenInput = form.querySelector(
+        let hiddenInput = group.querySelector(
           `input[type="hidden"][name="${groupName}"]`,
         );
         if (!hiddenInput) {
@@ -309,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
           hiddenInput.type = "hidden";
           hiddenInput.name = groupName;
           hiddenInput.value = "";
-          form.appendChild(hiddenInput);
+          group.appendChild(hiddenInput); // ← append to fieldset, not form wrapper
         }
 
         const checkboxes = group.querySelectorAll('input[type="checkbox"]');
@@ -322,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         checkboxes.forEach((cb) => cb.addEventListener("change", sync));
-        sync(); // initial sync
+        sync();
       });
 
     // ---------------------------------
