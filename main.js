@@ -542,7 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
     textEl.innerHTML =
       words.join(" ") +
       (words.length ? " " : "") +
-      `<span style="white-space:nowrap">${lastWord}&nbsp;</span>`;
+      `<span style="white-space:nowrap" class="u-nowrap-span-wrapper">${lastWord}&nbsp;</span>`;
 
     // Move icon inside the nowrap span
     const nowrap = textEl.querySelector("span");
