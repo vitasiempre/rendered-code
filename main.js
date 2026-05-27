@@ -343,6 +343,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let currentSection = form.querySelector(".form-section.current");
 
+    // Progress step back navigation
+    const allSections = Array.from(form.querySelectorAll("[data-step]"));
+    form.querySelectorAll(".progress-steps").forEach((progressBar) => {
+      const steps = progressBar.querySelectorAll(".step");
+      steps.forEach((step, i) => {
+        const targetSection = allSections[i];
+        if (!targetSection) return;
+        step.style.cursor = "pointer";
+        step.addEventListener("click", () => {
+          const targetIndex = allSections.indexOf(targetSection);
+          const currentIndex = allSections.indexOf(currentSection);
+          if (targetIndex >= currentIndex) return;
+          if (targetSection === currentSection) return;
+          currentSection
+            .querySelectorAll("input, textarea, select")
+            .forEach((el) => {
+              el.dataset.wasRequired = el.required;
+              el.required = false;
+            });
+          currentSection.classList.remove("current");
+          currentSection.classList.add("hidden");
+          targetSection
+            .querySelectorAll("input, textarea, select")
+            .forEach((el) => {
+              el.required = el.dataset.wasRequired === "true";
+            });
+          targetSection.classList.remove("hidden");
+          targetSection.classList.add("current");
+          currentSection = targetSection;
+          if (window.marchBtnInit)
+            requestAnimationFrame(() => window.marchBtnInit(form));
+        });
+      });
+    });
+
     function getSelectedCategory() {
       const selected = form.querySelector('input[name="contact-type"]:checked');
       if (!selected) return;
