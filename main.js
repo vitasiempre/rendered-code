@@ -223,11 +223,6 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   const forms = document.querySelectorAll(".form");
   forms.forEach((form, index) => {
-    // Snapshot original required state before any modifications
-    form.querySelectorAll("input, textarea, select").forEach((el) => {
-      el.dataset.originalRequired = String(el.required);
-    });
-
     // ---------------------------------
     // Add required attributes
     // ---------------------------------
@@ -236,6 +231,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     form.querySelectorAll('[data-required="true"]').forEach((el) => {
       if (el.type !== "file") el.required = true;
+    });
+
+    // Snapshot original required state before any modifications
+    form.querySelectorAll("input, textarea, select").forEach((el) => {
+      el.dataset.originalRequired = String(el.required);
     });
 
     form.addEventListener("input", (e) => {
@@ -564,7 +564,7 @@ document.addEventListener("DOMContentLoaded", function () {
           break;
       }
     });
-  };);
+  });
 });
 
 ///////////////////////////////////////////////////////////////////////////////
