@@ -355,25 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const targetIndex = allSections.indexOf(targetSection);
           const currentIndex = allSections.indexOf(currentSection);
           if (targetIndex >= currentIndex) return;
-          if (targetSection === currentSection) return;
-          currentSection
-            .querySelectorAll("input, textarea, select")
-            .forEach((el) => {
-              el.dataset.wasRequired = el.required;
-              el.required = false;
-            });
-          currentSection.classList.remove("current");
-          currentSection.classList.add("hidden");
-          targetSection
-            .querySelectorAll("input, textarea, select")
-            .forEach((el) => {
-              el.required = el.dataset.wasRequired === "true";
-            });
-          targetSection.classList.remove("hidden");
-          targetSection.classList.add("current");
-          currentSection = targetSection;
-          if (window.marchBtnInit)
-            requestAnimationFrame(() => window.marchBtnInit(form));
+          showNextSection(targetSection); // ← reuse existing function
         });
       });
     });
