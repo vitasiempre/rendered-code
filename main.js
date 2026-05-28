@@ -423,6 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
       target.required = true;
       target.reportValidity();
+      console.log("validate radio: ", target, target.reportValidity());
       target.required = false;
 
       const cleanup = () => {
