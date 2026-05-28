@@ -554,12 +554,6 @@ document.addEventListener("DOMContentLoaded", function () {
           getSelectedCategory();
           break;
 
-        case "submit":
-          e.preventDefault();
-          if (!validateCurrentSection()) return;
-          form.querySelector("form").submit();
-          break;
-
         default:
           break;
       }
