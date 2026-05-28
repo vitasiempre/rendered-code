@@ -515,9 +515,11 @@ document.addEventListener("DOMContentLoaded", function () {
         'input[name="submission_page"]',
       );
 
-      const dataValue = input.getAttribute("data-value");
-      if (dataValue) {
-        submissionPage.value = dataValue;
+      if (submissionPage) {
+        const dataValue = submissionPage.getAttribute("data-value");
+        if (dataValue) {
+          submissionPage.value = dataValue;
+        }
       }
 
       if (window.marchBtnInit) {
