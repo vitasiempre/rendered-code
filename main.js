@@ -398,7 +398,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function validateField(el) {
       if (el.checkValidity()) return null;
       el.reportValidity();
-      return el.closest(".text-input, .textarea") || el;
+      const wrapper = el.closest(".text-input, .textarea");
+      console.log("validateField:", el, "wrapper found:", wrapper);
+      return wrapper || el;
     }
 
     function validateRadioGroup(name, section) {
@@ -459,10 +461,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function validateCurrentSection() {
-      console.log(
-        "validateCurrentSection called, currentSection:",
-        currentSection,
-      );
       currentSection.querySelectorAll(".is-error").forEach((el) => {
         el.classList.remove("is-error");
       });
