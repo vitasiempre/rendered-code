@@ -489,11 +489,14 @@ document.addEventListener("DOMContentLoaded", function () {
           errorTarget = validateFileInput(el);
         } else if (el.type === "file") {
           continue;
-        } else if (el.type === "radio" && el.required) {
+        } else if (el.type === "radio") {
           if (seenRadios.has(el.name)) continue;
           seenRadios.add(el.name);
+
+          const radioGroup = el.closest('[data-required="true"]');
+          if (!radioGroup) continue; // optional group, skip
+
           errorTarget = validateRadioGroup(el.name, currentSection);
-          console.log("radio error target:", errorTarget);
         } else if (el.type === "checkbox" && el.required) {
           if (seenCheckboxes.has(el.name)) continue;
           seenCheckboxes.add(el.name);
