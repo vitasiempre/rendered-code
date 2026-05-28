@@ -401,15 +401,37 @@ document.addEventListener("DOMContentLoaded", function () {
       return el.closest(".text-input, .textarea") || el;
     }
 
+    // function validateRadioGroup(name, section) {
+    //   const group = Array.from(
+    //     section.querySelectorAll(`input[name="${name}"]`),
+    //   );
+    //   if (group.some((el) => el.checked)) return null;
+    //   group[0].required = true;
+    //   group[0].reportValidity();
+    //   group[0].required = false;
+    //   return group[0].closest(".radio__group") || group[0];
+    // }
+
     function validateRadioGroup(name, section) {
       const group = Array.from(
         section.querySelectorAll(`input[name="${name}"]`),
       );
       if (group.some((el) => el.checked)) return null;
-      group[0].required = true;
-      group[0].reportValidity();
-      group[0].required = false;
-      return group[0].closest(".radio__group") || group[0];
+
+      const target = group[0];
+      target.style.cssText =
+        "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+      target.required = true;
+      target.reportValidity();
+      target.required = false;
+
+      const cleanup = () => {
+        target.style.cssText = "";
+        group.forEach((r) => r.removeEventListener("change", cleanup));
+      };
+      group.forEach((r) => r.addEventListener("change", cleanup));
+
+      return target.closest(".radio__group") || target;
     }
 
     function validateCheckboxGroup(name, section) {
