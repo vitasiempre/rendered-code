@@ -264,13 +264,10 @@ document.addEventListener("DOMContentLoaded", function () {
     hiddenInputs.forEach((input) => {
       let inputUpdatedName = input.getAttribute("name") + "-" + index;
       input.id = inputUpdatedName;
-      const submissionPageInput = document.querySelector(
-        'input[name="submission_page"]',
-      );
-      if (submissionPageInput) {
-        submissionPageInput.value = window.location.href;
-      } else {
-        console.log("not found url input");
+
+      const dataValue = input.getAttribute("data-value");
+      if (dataValue) {
+        input.value = dataValue;
       }
     });
 
