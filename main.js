@@ -514,7 +514,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const submissionPage = form.querySelector(
         'input[name="submission_page"]',
       );
-      if (submissionPage) submissionPage.value = window.location.href;
+
+      const dataValue = input.getAttribute("data-value");
+      if (dataValue) {
+        submissionPage.value = dataValue;
+      }
 
       if (window.marchBtnInit) {
         requestAnimationFrame(() => window.marchBtnInit(form));
