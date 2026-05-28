@@ -492,6 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (seenRadios.has(el.name)) continue;
           seenRadios.add(el.name);
           errorTarget = validateRadioGroup(el.name, currentSection);
+          console.log("radio error target:", errorTarget);
         } else if (el.type === "checkbox" && el.required) {
           if (seenCheckboxes.has(el.name)) continue;
           seenCheckboxes.add(el.name);
