@@ -223,6 +223,11 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   const forms = document.querySelectorAll(".form");
   forms.forEach((form, index) => {
+    // Snapshot original required state before any modifications
+    form.querySelectorAll("input, textarea, select").forEach((el) => {
+      el.dataset.originalRequired = String(el.required);
+    });
+
     // ---------------------------------
     // Add required attributes
     // ---------------------------------
@@ -501,7 +506,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Restore required on fields coming into view
       nextSection.querySelectorAll("input, textarea, select").forEach((el) => {
-        el.required = el.dataset.wasRequired === "true";
+        el.required = el.dataset.originalRequired === "true";
       });
 
       nextSection.classList.remove("hidden");
@@ -559,7 +564,7 @@ document.addEventListener("DOMContentLoaded", function () {
           break;
       }
     });
-  });
+  };);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
