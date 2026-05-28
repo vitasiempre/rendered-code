@@ -557,7 +557,7 @@ document.addEventListener("DOMContentLoaded", function () {
         case "submit":
           e.preventDefault();
           if (!validateCurrentSection()) return;
-          form.submit();
+          form.querySelector("form").submit();
           break;
 
         default:
