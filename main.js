@@ -397,7 +397,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       target.setCustomValidity("Please select an option");
       target.style.cssText =
-        "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+        "opacity:0; position:fixed; top:50px; left:50px; width:20px; height:20px;";
       target.required = true;
       target.reportValidity();
       target.required = false;
@@ -420,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const target = group[0];
       target.style.cssText =
-        "opacity:1; position:fixed; top:50px; left:50px; width:20px; height:20px;";
+        "opacity:0; position:fixed; top:50px; left:50px; width:20px; height:20px;";
       target.setCustomValidity("Please select at least one option");
       target.reportValidity();
 
