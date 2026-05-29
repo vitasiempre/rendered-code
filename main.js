@@ -397,7 +397,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       target.setCustomValidity("Please select an option");
       target.style.cssText =
-        "opacity:1; position:absolute; top:50%; left:50%; width:1px; height:1px;";
+        "opacity:1; position:absolute; top:50%; left:50%; width:20px; height:20px;";
       target.required = true;
       target.reportValidity();
       target.required = false;
@@ -420,9 +420,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const target = group[0];
       target.style.cssText =
-        "opacity:1; position:absolute; top:50%; left:50%; width:1px; height:1px;";
+        "opacity:1; position:absolute; top:50%; left:50%; width:20px; height:20px;";
       target.setCustomValidity("Please select at least one option");
       target.reportValidity();
+      target.style.cssText = "";
 
       // Clear on next interaction so tooltip has time to render
       const cleanup = () => {
