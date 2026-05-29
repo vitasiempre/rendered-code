@@ -8,7 +8,10 @@ $(".slider-main-component").each(function index() {
       forceToAxis: true,
     },
     keyboard: true,
-    freeMode: true,
+    freeMode: {
+      enabled: true,
+      momentumBounce: false,
+    },
     spaceBetween: 30,
     navigation: {
       nextEl: ".swiper-button-next",
