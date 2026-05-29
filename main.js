@@ -470,9 +470,13 @@ document.addEventListener("DOMContentLoaded", function () {
           if (!radioGroup) continue; // optional group, skip
 
           errorTarget = validateRadioGroup(el.name, currentSection);
-        } else if (el.type === "checkbox" && el.required) {
+        } else if (el.type === "checkbox") {
           if (seenCheckboxes.has(el.name)) continue;
           seenCheckboxes.add(el.name);
+
+          const checkboxGroup = el.closest('[data-required="true"]');
+          if (!checkboxGroup) continue; // optional group, skip
+
           errorTarget = validateCheckboxGroup(el.name, currentSection);
         } else if (el.type !== "radio" && el.type !== "checkbox") {
           errorTarget = validateField(el);
