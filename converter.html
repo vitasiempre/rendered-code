@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Art Image Converter</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #0d0d0d;
+        color: #e8e8e8;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        min-height: 100vh;
+        padding: 32px 24px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 4px;
+      }
+      .sub {
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+      }
+      .enc-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        margin-bottom: 20px;
+        border: 1px solid #222;
+        background: #111;
+      }
+      .enc-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .dot-spin {
+        background: #333;
+        border: 2px solid #6366f1;
+        border-top-color: transparent;
+        animation: spin 0.7s linear infinite;
+      }
+      .dot-ok {
+        background: #4ade80;
+      }
+      .dot-warn {
+        background: #facc15;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .dropzone {
+        border: 2px dashed #2a2a2a;
+        border-radius: 12px;
+        padding: 44px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 24px;
+      }
+      .dropzone:hover,
+      .dropzone.over {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.04);
+      }
+      .dz-icon {
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+      }
+      .dz-main {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .dz-sub {
+        color: #555;
+        font-size: 0.82rem;
+      }
+      #fileInput {
+        display: none;
+      }
+      .lbl {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #555;
+        margin-bottom: 10px;
+      }
+      .presets {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      .preset {
+        background: #141414;
+        border: 2px solid #222;
+        border-radius: 10px;
+        padding: 14px 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+      }
+      .preset:hover {
+        border-color: #3a3a3a;
+      }
+      .preset.sel {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.08);
+      }
+      .preset-name {
+        font-size: 0.72rem;
+        color: #666;
+        margin-bottom: 5px;
+      }
+      .preset-px {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .custom-wrap {
+        display: none;
+        margin-top: 8px;
+      }
+      .preset.sel .custom-wrap {
+        display: block;
+      }
+      .custom-wrap input {
+        background: #0d0d0d;
+        border: 1px solid #333;
+        border-radius: 6px;
+        color: #e8e8e8;
+        font-size: 0.85rem;
+        padding: 5px 8px;
+        width: 100%;
+        text-align: center;
+        outline: none;
+        -moz-appearance: textfield;
+      }
+      .custom-wrap input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+      .custom-wrap input:focus {
+        border-color: #6366f1;
+      }
+      .q-block {
+        background: #141414;
+        border: 1px solid #1e1e1e;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 24px;
+        display: grid;
+        gap: 12px;
+      }
+      .q-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .q-row label {
+        font-size: 0.82rem;
+        color: #888;
+        white-space: nowrap;
+        width: 130px;
+      }
+      input[type="range"] {
+        flex: 1;
+        accent-color: #6366f1;
+        cursor: pointer;
+      }
+      .q-num {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #6366f1;
+        min-width: 40px;
+        text-align: right;
+      }
+      .q-hint {
+        font-size: 0.72rem;
+        color: #444;
+        line-height: 1.6;
+      }
+      .q-hint b {
+        color: #555;
+      }
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: #141414;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #1e1e1e;
+      }
+      .card img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        display: block;
+      }
+      .card-info {
+        padding: 7px 8px;
+      }
+      .card-name {
+        font-size: 0.67rem;
+        color: #777;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card-dims {
+        font-size: 0.65rem;
+        color: #444;
+        margin-top: 1px;
+      }
+      .card-size {
+        font-size: 0.65rem;
+        margin-top: 2px;
+        font-weight: 600;
+      }
+      .card-rm {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: rgba(0, 0, 0, 0.7);
+        border: none;
+        color: #888;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+      .card-rm:hover {
+        color: #fff;
+        background: rgba(0, 0, 0, 0.9);
+      }
+      .badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 0.62rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+      .badge-ok {
+        background: #16a34a;
+      }
+      .badge-err {
+        background: #dc2626;
+      }
+      .badge-spin {
+        background: #1e1e1e;
+        border: 2px solid #6366f1;
+        border-top-color: transparent;
+        animation: spin 0.7s linear infinite;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .btn {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.88rem;
+        font-weight: 600;
+        padding: 11px 22px;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .btn-primary {
+        background: #6366f1;
+        color: #fff;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background: #5254cc;
+      }
+      .btn-primary:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .btn-ghost {
+        background: #141414;
+        color: #888;
+        border: 1px solid #222;
+      }
+      .btn-ghost:hover:not(:disabled) {
+        border-color: #444;
+        color: #ccc;
+      }
+      .btn-ghost:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .status-txt {
+        font-size: 0.8rem;
+        color: #555;
+        margin-left: 4px;
+      }
+      .fc {
+        margin-left: auto;
+        font-size: 0.78rem;
+        color: #444;
+      }
+      @media (max-width: 560px) {
+        .presets {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🖼 Art Image Converter</h1>
+    <p class="sub">
+      Resize & export artwork as AVIF · up to 20 images per batch · 100%
+      in-browser
+    </p>
+
+    <div class="enc-status" id="encStatus">
+      <div class="enc-dot dot-spin" id="encDot"></div>
+      <span id="encMsg">Loading AVIF encoder (libaom / WebAssembly)…</span>
+    </div>
+
+    <div class="dropzone" id="dropzone">
+      <div class="dz-icon">📂</div>
+      <div class="dz-main">Drag & drop images here</div>
+      <div class="dz-sub">
+        or click to browse &nbsp;·&nbsp; JPG, PNG, WebP, GIF &nbsp;·&nbsp; up to
+        20 files
+      </div>
+      <input type="file" id="fileInput" multiple accept="image/*" />
+    </div>
+
+    <div class="lbl">Output Width</div>
+    <div class="presets" id="presets">
+      <div class="preset sel" data-w="3000">
+        <div class="preset-name">Artist Feed</div>
+        <div class="preset-px">3000 px</div>
+      </div>
+      <div class="preset" data-w="1500">
+        <div class="preset-name">Cover / Collab</div>
+        <div class="preset-px">1500 px</div>
+      </div>
+      <div class="preset" data-w="1000">
+        <div class="preset-name">Everything Else</div>
+        <div class="preset-px">1000 px</div>
+      </div>
+      <div class="preset" data-w="custom">
+        <div class="preset-name">Custom</div>
+        <div class="preset-px">— px</div>
+        <div class="custom-wrap">
+          <input
+            type="number"
+            id="customW"
+            placeholder="e.g. 800"
+            min="1"
+            max="9999"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-row">
+        <label>Quality</label>
+        <input
+          type="range"
+          id="qSlider"
+          min="0"
+          max="100"
+          step="1"
+          value="65"
+        />
+        <span class="q-num" id="qVal">65</span>
+      </div>
+      <div class="q-row">
+        <label>Compression effort</label>
+        <input
+          type="range"
+          id="effortSlider"
+          min="1"
+          max="9"
+          step="1"
+          value="6"
+        />
+        <span class="q-num" id="effortVal">6</span>
+      </div>
+      <div class="q-hint">
+        <b>Quality:</b> 60–70 = great for web artwork · lower = smaller files ·
+        higher = sharper<br />
+        <b>Effort:</b> higher = better compression but slower · 6 is a good
+        balance
+      </div>
+    </div>
+
+    <div id="grid" class="preview-grid"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="convertBtn" disabled>
+        ⬇ Convert &amp; Download ZIP
+      </button>
+      <button class="btn btn-ghost" id="clearBtn" disabled>Clear All</button>
+      <span class="status-txt" id="statusTxt"></span>
+      <span class="fc" id="fc"></span>
+    </div>
+
+    <!-- JSZip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <script type="module">
+      import { encode } from "https://esm.sh/@jsquash/avif@1.3.0";
+
+      const MAX = 20;
+      let items = [],
+        idSeq = 0;
+
+      const $ = (id) => document.getElementById(id);
+      const dropzone = $("dropzone"),
+        fileInput = $("fileInput"),
+        grid = $("grid");
+      const convertBtn = $("convertBtn"),
+        clearBtn = $("clearBtn");
+      const statusTxt = $("statusTxt"),
+        fc = $("fc");
+      const qSlider = $("qSlider"),
+        qVal = $("qVal");
+      const effortSlider = $("effortSlider"),
+        effortVal = $("effortVal");
+
+      $("encDot").className = "enc-dot dot-ok";
+      $("encMsg").textContent =
+        "✓ High-efficiency AVIF encoder ready (libaom / WebAssembly)";
+
+      qSlider.oninput = () => (qVal.textContent = qSlider.value);
+      effortSlider.oninput = () => (effortVal.textContent = effortSlider.value);
+
+      $("presets").onclick = (e) => {
+        const p = e.target.closest(".preset");
+        if (!p) return;
+        document
+          .querySelectorAll(".preset")
+          .forEach((x) => x.classList.remove("sel"));
+        p.classList.add("sel");
+        if (p.dataset.w === "custom")
+          setTimeout(() => $("customW").focus(), 50);
+      };
+
+      dropzone.onclick = (e) => {
+        if (e.target === $("customW")) return;
+        fileInput.click();
+      };
+      dropzone.ondragover = (e) => {
+        e.preventDefault();
+        dropzone.classList.add("over");
+      };
+      dropzone.ondragleave = () => dropzone.classList.remove("over");
+      dropzone.ondrop = (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("over");
+        handleFiles([...e.dataTransfer.files]);
+      };
+      fileInput.onchange = () => {
+        handleFiles([...fileInput.files]);
+        fileInput.value = "";
+      };
+
+      function handleFiles(raw) {
+        const imgs = raw.filter((f) => f.type.startsWith("image/"));
+        const slots = MAX - items.length;
+        if (slots <= 0) {
+          statusTxt.textContent = `Already at ${MAX} limit.`;
+          return;
+        }
+        imgs.slice(0, slots).forEach((f) => addItem(f));
+        if (imgs.length > slots)
+          statusTxt.textContent = `Only added ${slots} — ${MAX} max.`;
+        updateUI();
+      }
+
+      function addItem(file) {
+        const id = ++idSeq;
+        const url = URL.createObjectURL(file);
+        items.push({ id, file, url, name: file.name, w: null, h: null });
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = "c" + id;
+        const img = document.createElement("img");
+        img.src = url;
+        img.onload = () => {
+          const entry = items.find((x) => x.id === id);
+          if (entry) {
+            entry.w = img.naturalWidth;
+            entry.h = img.naturalHeight;
+          }
+          const d = card.querySelector(".card-dims");
+          if (d) d.textContent = img.naturalWidth + " × " + img.naturalHeight;
+        };
+        const rm = document.createElement("button");
+        rm.className = "card-rm";
+        rm.innerHTML = "&times;";
+        rm.onclick = () => removeItem(id);
+        const short =
+          file.name.length > 18 ? file.name.slice(0, 15) + "…" : file.name;
+        const info = document.createElement("div");
+        info.className = "card-info";
+        info.innerHTML = `<div class="card-name" title="${file.name}">${short}</div><div class="card-dims">—</div><div class="card-size"></div>`;
+        card.append(img, rm, info);
+        grid.appendChild(card);
+      }
+
+      function removeItem(id) {
+        const i = items.findIndex((x) => x.id === id);
+        if (i < 0) return;
+        URL.revokeObjectURL(items[i].url);
+        items.splice(i, 1);
+        document.getElementById("c" + id)?.remove();
+        updateUI();
+      }
+
+      function updateUI() {
+        convertBtn.disabled = items.length === 0;
+        clearBtn.disabled = items.length === 0;
+        fc.textContent = items.length ? `${items.length} / ${MAX}` : "";
+      }
+
+      function getTargetW() {
+        const sel = document.querySelector(".preset.sel");
+        if (!sel) return 1000;
+        if (sel.dataset.w === "custom") {
+          const v = parseInt($("customW").value);
+          return !v || v < 1 ? null : Math.min(v, 9999);
+        }
+        return parseInt(sel.dataset.w);
+      }
+
+      function loadImg(url) {
+        return new Promise((res, rej) => {
+          const img = new Image();
+          img.onload = () => res(img);
+          img.onerror = () => rej(new Error("load failed"));
+          img.src = url;
+        });
+      }
+
+      async function encodeAvif(imgEl, targetW, quality, effort) {
+        const scale = Math.min(1, targetW / imgEl.naturalWidth);
+        const w = Math.max(1, Math.round(imgEl.naturalWidth * scale));
+        const h = Math.max(1, Math.round(imgEl.naturalHeight * scale));
+        const c = document.createElement("canvas");
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(imgEl, 0, 0, w, h);
+        const imageData = ctx.getImageData(0, 0, w, h);
+        // cqLevel: 0 = best quality / largest, 62 = worst / smallest
+        const cqLevel = Math.round((1 - quality / 100) * 62);
+        // speed: 0 = slowest+best, 10 = fastest+worst; effort slider 1–9 → inverted
+        const speed = 10 - effort;
+        const buf = await encode(imageData, { cqLevel, speed });
+        return new Blob([buf], { type: "image/avif" });
+      }
+
+      convertBtn.onclick = async () => {
+        const tw = getTargetW();
+        if (!tw) {
+          alert("Please enter a valid custom width.");
+          return;
+        }
+        const quality = parseInt(qSlider.value);
+        const effort = parseInt(effortSlider.value);
+        convertBtn.disabled = true;
+        clearBtn.disabled = true;
+        items.forEach((x) => {
+          document
+            .getElementById("c" + x.id)
+            ?.querySelectorAll(".badge")
+            .forEach((b) => b.remove());
+          const s = document
+            .getElementById("c" + x.id)
+            ?.querySelector(".card-size");
+          if (s) s.textContent = "";
+        });
+        const results = [];
+        for (let i = 0; i < items.length; i++) {
+          const entry = items[i];
+          statusTxt.textContent = `Encoding ${i + 1} / ${items.length}…`;
+          setSpinner(entry.id);
+          try {
+            const img = await loadImg(entry.url);
+            const blob = await encodeAvif(img, tw, quality, effort);
+            results.push({
+              name: entry.name.replace(/\.[^.]+$/, "") + ".avif",
+              blob,
+            });
+            setBadge(entry.id, "ok");
+            setCardSize(entry.id, blob);
+          } catch (err) {
+            console.warn("Failed:", entry.name, err);
+            setBadge(entry.id, "err");
+          }
+        }
+        if (!results.length) {
+          statusTxt.textContent = "";
+          convertBtn.disabled = false;
+          clearBtn.disabled = false;
+          alert("All conversions failed. Check the console for details.");
+          return;
+        }
+        statusTxt.textContent = "Packaging ZIP…";
+        const zip = new JSZip();
+        results.forEach(({ name, blob }) => zip.file(name, blob));
+        const zipBlob = await zip.generateAsync({
+          type: "blob",
+          compression: "STORE",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = "converted-artwork.zip";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        const total = results.reduce((s, r) => s + r.blob.size, 0);
+        statusTxt.textContent = `✓ ${results.length} file${results.length > 1 ? "s" : ""} · ${fmtSize(total)} total`;
+        convertBtn.disabled = false;
+        clearBtn.disabled = false;
+      };
+
+      clearBtn.onclick = () => {
+        items.forEach((x) => URL.revokeObjectURL(x.url));
+        items = [];
+        grid.innerHTML = "";
+        statusTxt.textContent = "";
+        updateUI();
+      };
+
+      function setBadge(id, type) {
+        const card = document.getElementById("c" + id);
+        if (!card) return;
+        card.querySelectorAll(".badge").forEach((b) => b.remove());
+        const b = document.createElement("div");
+        b.className = "badge badge-" + type;
+        b.textContent = type === "ok" ? "✓" : "✕";
+        card.appendChild(b);
+      }
+      function setSpinner(id) {
+        const card = document.getElementById("c" + id);
+        if (!card) return;
+        card.querySelectorAll(".badge").forEach((b) => b.remove());
+        const b = document.createElement("div");
+        b.className = "badge badge-spin";
+        card.appendChild(b);
+      }
+      function setCardSize(id, blob) {
+        const el = document
+          .getElementById("c" + id)
+          ?.querySelector(".card-size");
+        if (!el) return;
+        const kb = blob.size / 1024;
+        el.style.color =
+          kb < 500 ? "#4ade80" : kb < 1500 ? "#facc15" : "#f87171";
+        el.textContent = "→ " + fmtSize(blob.size);
+      }
+      function fmtSize(b) {
+        return b >= 1048576
+          ? (b / 1048576).toFixed(1) + " MB"
+          : Math.round(b / 1024) + " KB";
+      }
+    </script>
+  </body>
+</html>
