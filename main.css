@@ -743,7 +743,7 @@ input[type="hidden"],
   @container filters-and-clear__wrapper (max-width: 600px) {
     .filter-collection__wrapper {
       grid-area: 1 / 1 / 2 / 6 !important;
-      grid-gap: 30px;
+      gap: 30px;
     }
     .clear-filters__button {
       grid-area: 1 / 6 / 2 / 6 !important;
@@ -763,7 +763,7 @@ input[type="hidden"],
     }
 
     .filter-collection__wrapper {
-      grid-gap: 30px;
+      gap: 30px;
     }
 
     .filters-and-clear__wrapper {
@@ -845,7 +845,7 @@ input[type="hidden"],
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 60px auto;
-    grid-gap: 0;
+    gap: 0;
   }
 
   .filters-divider {
@@ -875,7 +875,7 @@ input[type="hidden"],
 
   .filter-collection__wrapper,
   .filter-collection__wrapper .footnote-flex {
-    grid-row-gap: 20px;
+    row-gap: 20px;
   }
 
   .tag-collection-item label {
